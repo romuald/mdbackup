@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 my $string = q|
 # mdfind queries
 include-query = kMDItemFinderComment = 'backup'w
@@ -19,10 +21,18 @@ backup-to = /Volumes/Backup\ HD/XXXXXX-CHANGEME
 )
 |;
 
+my %conf = ();
+
 $string =~ s/^\s*[#]+.*//gm;
 
-while ( $string =~ /^(\w+)\s*=\s*/  ) {
-	print $1;
+while ( $string =~ /^([^\@\s]+?)\s*=\s*(.*)/gm  ) {
+	$conf{$1} = $2;
 }
 
-print $string;
+while ( $string =~ /\@(\S+?)\s*=\s*\((.*?)\)/gs ) {
+    my @values = grep { length } split /\s+/s, $2;
+
+    $conf{$1} = [ @values ];
+}
+print Dumper \%conf;
+#print $string;
