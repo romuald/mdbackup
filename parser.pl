@@ -48,10 +48,10 @@ while ( $string =~ /\@(\S+?)\s*=\s*\((.*?)(?<!\\)\)/gs ) {
     map { s/\\([ )])/$1/g; $_ }
     # 2. remove empty matches
     grep { length }
-    # 1. split using non-escaped spaces
+    # 1. split using non-escaped whitespaces
     split /(?<!\\)\s+/s, $2;
 
-    $conf{$1} = [ @values ];
+    $conf{$1} = \@values;
 }
 # and no dict yet
 
