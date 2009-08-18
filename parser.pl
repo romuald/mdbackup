@@ -33,16 +33,27 @@ my %conf = ();
 # Remove inline comments
 $string =~ s/(?<!\\)\s+#.*//gm;
 
-# and unescape the non-comments
+# and unescape the non-comments #
 $string =~ s/\\#/#/gm;
 
+# Simple scalars
 while ( $string =~ /^\s*([^#\@\s]+?)\s*=\s*(.*?)\s*$/gm  ) {
 	$conf{$1} = $2;
 }
 
+# Arrays
 while ( $string =~ /\@(\S+?)\s*=\s*\((.*?)(?<!\\)\)/gs ) {
-    my @values = map { s/\\([ )])/$1/g; $_ } grep { length } split /(?<!\\)\s+/s, $2;
+    my @values =
+    # 3. then unescape spaces and parenthesis
+    map { s/\\([ )])/$1/g; $_ }
+    # 2. remove empty matches
+    grep { length }
+    # 1. split using non-escaped spaces
+    split /(?<!\\)\s+/s, $2;
+
     $conf{$1} = [ @values ];
 }
+# and no dict yet
+
 print Dumper \%conf;
 #print $string;
