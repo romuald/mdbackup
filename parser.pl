@@ -7,10 +7,9 @@ my $string = q|# mdfind queries
 # Where does backups go ?
 backup-to = 
 
+# mdfind include and exclude queries
 include-query = kMDItemFinderComment = 'backup'w    
 exclude-query = kMDItemFinderComment = 'nobckup'w
-
-dummy = dumb # This is an inline comment, must be preceded by a space 
 
 # Paths to include that aren't found by mdfind
 @include-paths = ()
@@ -19,10 +18,11 @@ dummy = dumb # This is an inline comment, must be preceded by a space
 @exclude-paths = (
 	/Users/*/Library/Caches
 
-    # Spaces must be escaped too, see below
+    # Spaces in lists must be escaped, see below
     # /Library/Application\ Support
 )
 
+# Currently only long options
 @rsync-options = (
 	delete progress compress archive recursive
 )
