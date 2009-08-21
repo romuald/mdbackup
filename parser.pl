@@ -4,13 +4,13 @@ use warnings;
 use Data::Dumper;
 
 my $string = q|# mdfind queries
+# Where does backups go ?
+backup-to = 
+
 include-query = kMDItemFinderComment = 'backup'w    
 exclude-query = kMDItemFinderComment = 'nobckup'w
 
 dummy = dumb # This is an inline comment, must be preceded by a space 
-
-# Where am I?
-backup-to = /Volumes/Backup\ HD/XXXXXX-CHANGEME
 
 # Paths to include that aren't found by mdfind
 @include-paths = ()
@@ -37,7 +37,7 @@ $string =~ s/(?<!\\)\s+#.*//gm;
 $string =~ s/\\#/#/gm;
 
 # Simple scalars
-while ( $string =~ /^\s*([^#\@\s]+?)\s*=\s*(.*?)\s*$/gm  ) {
+while ( $string =~ /^[\040\t]*([^#\@\s]+?)[\040\t]*=[\040\t]*(.*?)[\040\t]*$/gm  ) {
 	$conf{$1} = $2;
 }
 
