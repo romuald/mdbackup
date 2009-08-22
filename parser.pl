@@ -6,11 +6,15 @@ use Getopt::Long;
 
 use Data::Dumper;
 
-
 =head1 load_config
 
-load config from file / defaults
-TODO getopts to force options
+load configuration from
+ - command line arguments
+ - config file if present / specified
+
+Use the default configuration file if no config file was found
+
+Dies if configuration file was set on command line but does not exists
 
 =cut
 sub load_config() {
@@ -33,8 +37,12 @@ sub load_config() {
 	}
 	
 	# was config given as part of the command line ?
-	$return{config} ||= $config_file;
-	$config_file = glob(delete $return{config});
+	my $die_on_404 = 0;
+	if ( exists $return{config} ) {
+		$config_file = delete $return{config};
+		$die_on_404 = 1;
+	}
+	$config_file = glob($config_file);
 	
 	my $strconf = undef;
 	
@@ -44,7 +52,8 @@ sub load_config() {
 		$strconf = join "", <CONF>;
 		close CONF;
 	} else {
-		# print STDERR "Can't open config file $config_file, revert to defaults\n";
+		die "Can't open configuration file \"$config_file\"" if $die_on_404;
+		
 		# Rewind data handle after reading, in case we'll need to read it again
 		my $origin = tell(DATA);
 		$strconf = join "", <DATA>;
