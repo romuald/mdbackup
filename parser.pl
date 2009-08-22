@@ -3,11 +3,18 @@ use warnings;
 
 use Data::Dumper;
 
+=head1 load_config
+
+load config from file / defaults
+TODO getopts to force options
+
+=cut
 sub load_config() {
 	my %return = ();
 	
 	my $config_file =  glob("~/.mdbackuprc");
 	
+	# TODO be able to use a different location using command line
 	if ( -f $config_file && -r _ ) {
 		open(CONF, $config_file);
 	} else {
