@@ -28,6 +28,21 @@ exclude-query = kMDItemFinderComment = 'nobckup'w
 )
 |;
 
+#use File::Glob;
+sub load_config() {
+	my %return = ();
+	
+	my $config_file =  glob("~/.mdbackuprc");
+	
+	if ( -f "~/.mdbackuprc" && -r _ ) {
+		
+	}
+	
+	return \%return;
+}
+
+load_config();
+exit;
 my %conf = ();
 
 # Remove inline comments
@@ -36,7 +51,7 @@ $string =~ s/(?<!\\)\s+#.*//gm;
 # and unescape the non-comments #
 $string =~ s/\\#/#/gm;
 
-# Simple scalars
+# Simple scalars, allow empty values with "varname = "
 while ( $string =~ /^[\040\t]*([^#\@\s]+?)[\040\t]*=[\040\t]*(.*?)[\040\t]*$/gm  ) {
 	$conf{$1} = $2;
 }
