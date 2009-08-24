@@ -25,9 +25,9 @@ sub load_config() {
 	# setup conf using command line arguments
 	GetOptions(\%return, qw/
 		config=s
-		rsync-options=s@   backup-to=s
-		include-paths=s@   exclude-paths=s@
-		include-query=s    exclude-query=s	
+		rsync-options=s@         backup-to=s
+		additional-includes=s@   additional-excludes=s@
+		include-query=s          exclude-query=s	
 	/);
 	
 	# lazy split using comma for rsync options
@@ -104,10 +104,10 @@ include-query = kMDItemFinderComment = 'backup'w
 exclude-query = kMDItemFinderComment = 'nobckup'w
 
 # Paths to include that aren't found by mdfind
-@include-paths = ()
+@additional-includes = ()
 
 # Paths to exclude that aren't found by mdfind
-@exclude-paths = (
+@additional-excludes = (
 	/Users/*/Library/Caches
 
     # Spaces in lists must be escaped, see below
