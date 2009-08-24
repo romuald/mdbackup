@@ -6,7 +6,7 @@ use Getopt::Long;
 
 use Data::Dumper;
 
-=head1 load_config
+=head1 get_config
 
 load configuration from
  - command line arguments
@@ -17,7 +17,7 @@ Use the default configuration file if no config file was found
 Dies if configuration file was set on command line but does not exists
 
 =cut
-sub load_config() {
+sub get_config() {
 	my %return = ();
 	
 	my $config_file =  "~/.mdbackuprc";
