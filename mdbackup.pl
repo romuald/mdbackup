@@ -8,6 +8,17 @@ use File::Temp;
 use Fcntl qw/SEEK_SET/;
 use Getopt::Long;
 
+use constant CONFPATH => "~/.mdbackuprc";
+
+sub strdata() {
+	# Rewind data handle after reading, in case we'll need to read it again
+	my $origin = tell(DATA);
+	my $strconf = join "", <DATA>;
+	seek(DATA, $origin, SEEK_SET);
+	
+	return $strconf;
+}
+
 # START CONFIG ------------------------------------------------------
 =head1 get_config
 
@@ -23,7 +34,7 @@ Dies if configuration file was set on command line but does not exists
 sub get_config() {
 	my %return = ();
 	
-	my $config_file =  "~/.mdbackuprc";
+	my $config_file =  CONFPATH;
 
 	# setup conf using command line arguments
 	GetOptions(\%return, qw/
@@ -34,7 +45,7 @@ sub get_config() {
 	/);
 	
 	# lazy split using comma for rsync options
-	foreach (("rsync-options")) {
+	foreach (("rsync-options",)) {
 		next unless ref $return{$_};
 		$return{$_} = [ split /,/, $return{$_}->[0] ];
 	}
@@ -57,10 +68,9 @@ sub get_config() {
 	} else {
 		die "Can't open configuration file \"$config_file\"" if $die_on_404;
 		
-		# Rewind data handle after reading, in case we'll need to read it again
-		my $origin = tell(DATA);
-		$strconf = join "", <DATA>;
-		seek(DATA, $origin, SEEK_SET);
+		$strconf = strdata();
+		
+		$return{'-defaults'} = 1;
 	}
 	
 	# Remove inline comments
@@ -98,7 +108,7 @@ sub get_config() {
 my $config = get_config();
 
 # Backup using Spotlight/Finder comments
-my $backup_query = $config->{'backup-query'};
+my $backup_query = $config->{'include-query'};
 my $exclude_query = $config->{'exclude-query'};
 
 # More paths
@@ -110,8 +120,30 @@ my $destination = $config->{'backup-to'};
 
 my @rsyncopts = @{ $config->{'rsync-options'} };
 
-print Dumper($config);
-exit;
+if ( ! $destination && $config->{'-defaults'} && -t ) {
+	print
+		"No default configuration was found and no destination set.\n",
+		"Do your want to copy the default configuration to ",
+		CONFPATH, " now? [Y/n] ";
+	
+	if ( <> =~ /^y/i ) {
+		my $data = strdata();
+		
+		open WRITECONF, ">" . glob(CONFPATH);
+		print WRITECONF strdata();
+		close WRITECONF;
+		
+		print "Done, pleaseset up the backup destination in ",
+			CONFPATH, " and restart me afterwards\n";
+		exit 1;
+	}
+}
+
+if ( ! $destination ) {
+	print STDERR "No backup destination set, I won't start rsync\n";
+	exit 1;
+}
+
 # END of basic config -----------------------------------------------
 
 # XXX remove / document somewhere else
